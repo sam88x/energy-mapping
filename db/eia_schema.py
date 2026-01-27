@@ -1,14 +1,8 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+from sqlalchemy.orm import Mapped, mapped_column
 
-engine = create_engine('')
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-class Base(DeclarativeBase):
-    id: Mapped[int] = mapped_column(primary_key=True)
+from db.schema import Base
 
 class EIAElecPowerOperational(Base):
     __tablename__ = 'eia_electric_power_operational'

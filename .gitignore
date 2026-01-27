@@ -2,3 +2,4 @@ __pycache__/
 .env
 uv.lock
 *.pkl
+*.sqlite3

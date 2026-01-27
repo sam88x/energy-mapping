@@ -11,7 +11,7 @@ class Config(BaseSettings):
     eia_api_key: str = os.getenv('EIA_API_KEY')
 
     @property
-    def deb_url(self):
+    def db_url(self):
         return f'sqlite:///./{self.db_name}'
 
 config = Config()
