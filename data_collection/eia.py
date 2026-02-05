@@ -7,8 +7,10 @@ from sqlalchemy import insert
 
 from core.config import config
 from db.eia_schema import EIAElecPowerOperational as EEPO_db
+from db.eia_schema import EIAOperationalGeneratorCapacity as EGC_db
 from db.schema import SessionLocal
 from models.eia_models import EIAElectricPowerOperational as EEPO_model
+from models.eia_models import EIAGeneratorCapacity as EGC_model
 
 class EIA_API:
     """ Class for pulling data from the EIA API
@@ -59,6 +61,54 @@ class EIA_API:
         with SessionLocal() as session:
             for item in data:
                 session.add(EEPO_db(**item.model_dump()))
+                session.commit()
+        
+        return raw_data
+
+    def get_generators_by_state(self, params):
+        route = 'electricity/operating-generator-capacity/data'
+        url = f'{self.url_start}{route}'
+        
+        params = {
+            "api_key": self.api_key,
+            "frequency": params['frequency'],
+            "data[]": ["latitude", "longitude", "nameplate-capacity-mw", "operating-year-month"],
+            "facets[stateid][]": params['state_code'],
+            "start": params['start'],
+            "end": params['end'],
+            "offset": params['offset'],
+            "length": params['length'] 
+        }
+
+        r = httpx.get(url, params=params, timeout=None)
+    
+        if r.status_code != 200:
+            print('Crap')
+        raw_data = r.json()['response']['data']
+
+        data = []
+
+        for data_dict in raw_data:
+            updated_dict = {}
+            for key, value in data_dict.items():
+                if '-' in key:
+                    new_key = key.replace('-', '_')
+                    updated_dict[new_key] = value
+                    continue
+                updated_dict[key] = value    
+                    
+            try:
+                data.append(EGC_model(**updated_dict))
+            except ValidationError as err:
+                for item in err.errors():
+                    loc = '.'.join(item['loc']) if len(item['loc']) > 1 \
+                            else item['loc'][0]
+                    print(f'{loc} - {item["msg"]}')
+
+        with SessionLocal() as session:
+            print('here')
+            for item in data:
+                session.add(EGC_db(**item.model_dump()))
                 session.commit()
         
         return raw_data
