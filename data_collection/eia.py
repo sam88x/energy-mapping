@@ -57,10 +57,8 @@ class EIA_API:
                 print(f'{loc} - {item["msg"]}')
 
         with SessionLocal() as session:
-            print('here')
             for item in data:
                 session.add(EEPO_db(**item.model_dump()))
                 session.commit()
         
         return raw_data
-

@@ -10,4 +10,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False,
                             bind=engine)
 
 class Base(DeclarativeBase):
+    """ SQLAlchemy Base Class to instantiate tables in the
+    database. Sets an id column for each table.
+    """
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, field_validator
 
 class EIAEPOParams(BaseModel):
-    """ PArameters class for EIA electrical-power-operational data
+    """ Parameters class for EIA electrical-power-operational data
     (Incomplete)
     """
     frequency: Literal['monthly', 'annual', 'quarterly']
